@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>정권혁 | Game Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- 날씨 위젯 (PC만, 우측 고정) -->
+  <aside id="weather-widget" class="weather-widget weather-widget--right" aria-label="날씨">
+    <div class="weather-inner">
+      <h3 class="weather-title">날씨</h3>
+      <div class="weather-input-wrap">
+        <input type="text" id="weather-city" class="weather-input" placeholder="지역 입력 (예: 서울)" maxlength="50">
+        <button type="button" id="weather-btn" class="weather-btn">확인</button>
+      </div>
+      <div id="weather-content" class="weather-content hidden">
+        <p class="weather-location" id="weather-location">-</p>
+        <p class="weather-date" id="weather-date">-</p>
+        <div class="weather-temp-wrap">
+          <img id="weather-icon" class="weather-icon" src="data:image/gif;base64,R0lGOODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" width="32" height="32">
+          <span id="weather-temp" class="weather-temp">-</span>
+        </div>
+      </div>
+      <p id="weather-error" class="weather-error hidden"></p>
+    </div>
+  </aside>
+
+  <!-- 왼쪽 호버 시 메뉴 나타남 -->
+  <div class="sidebar-wrap" id="sidebar-wrap">
+    <div class="sidebar-trigger" aria-label="메뉴 열기"></div>
+    <aside class="sidebar">
+      <a href="#" class="sidebar-brand" data-section="intro">정권혁 | Game Developer</a>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-link active" data-section="intro">소개</a>
+        <a href="#" class="nav-link" data-section="projects">프로젝트</a>
+        <a href="#" class="nav-link" data-section="qna">QnA</a>
+      </nav>
+      <div class="sidebar-actions">
+        <button type="button" id="dark-mode-toggle" class="icon-btn" aria-label="다크 모드 토글">
+          <span class="icon-sun">☀</span>
+          <span class="icon-moon hidden">🌙</span>
+        </button>
+        <button type="button" id="admin-entry-btn" class="btn btn-ghost btn-sm">관리자</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="app-layout">
+    <main class="main-content" id="main-content">
+    <!-- About Me (소개 + 기술 스택) -->
+    <section id="intro" class="section section-intro section-page section-active" data-section="intro">
+      <div class="container intro-content">
+        <h1 class="intro-title fade-in">정권혁</h1>
+        <p class="intro-subtitle fade-in">Game Developer</p>
+        <p class="intro-one-liner fade-in">Unity / Unreal Engine 기반 게임 개발 학습 및 실습 · 개인·팀 프로젝트 경험</p>
+        <div class="intro-summary fade-in">
+          <p>컴퓨터과학과 2학년</p>
+          <p>Unity, Unreal Engine 기반 게임 개발 학습 및 실습</p>
+          <p>개인 프로젝트 및 팀 프로젝트 경험</p>
+          <p class="intro-award">🏆 2025년 교내 대회 게임 개발 부문 금상 수상</p>
+        </div>
+        <h2 class="intro-skills-title fade-in">사용 기술 스택</h2>
+        <div class="skills-grid fade-in" id="skills-grid">
+          <div class="skill-card"><span>Unity</span></div>
+          <div class="skill-card"><span>Unreal Engine</span></div>
+          <div class="skill-card"><span>C#</span></div>
+          <div class="skill-card"><span>C++</span></div>
+          <div class="skill-card"><span>JavaScript</span></div>
+          <div class="skill-card"><span>Firebase</span></div>
+        </div>
+        <div class="intro-contact fade-in">
+          <a href="tel:010-4816-1357">010-4816-1357</a>
+          <a href="mailto:786poqqep@gmail.com">786poqqep@gmail.com</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="section section-projects section-page" data-section="projects">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">프로젝트</h2>
+          <button type="button" id="project-add-btn" class="btn btn-primary admin-only">프로젝트 추가</button>
+        </div>
+        <div id="projects-list" class="projects-grid">
+          <!-- 프로젝트 카드 동적 생성 -->
+          <div id="projects-skeleton" class="projects-skeleton">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+        <!-- 프로젝트 상세 모달 -->
+        <div id="project-modal" class="modal hidden">
+          <div class="modal-backdrop"></div>
+          <div class="modal-content project-detail">
+            <button type="button" class="modal-close" aria-label="닫기">&times;</button>
+            <div id="project-detail-body"></div>
+          </div>
+        </div>
+        <!-- 관리자: 프로젝트 추가/수정 모달 -->
+        <div id="project-form-modal" class="modal hidden">
+          <div class="modal-backdrop"></div>
+          <div class="modal-content modal-content--project">
+            <button type="button" class="modal-close form-close" aria-label="닫기">&times;</button>
+            <div class="project-form-header">
+              <h3 id="project-form-title" class="modal-title">프로젝트 추가</h3>
+              <p class="project-form-desc">프로젝트 정보를 입력하고 이미지를 추가하세요.</p>
+            </div>
+            <form id="project-form" class="project-form">
+              <input type="hidden" id="project-id">
+              <div class="form-section">
+                <h4 class="form-section-title">기본 정보</h4>
+                <div class="form-group">
+                  <label for="project-title">제목 *</label>
+                  <input type="text" id="project-title" required maxlength="100" placeholder="프로젝트 제목을 입력하세요">
+                </div>
+                <div class="form-group">
+                  <label for="project-summary">한 줄 요약 *</label>
+                  <input type="text" id="project-summary" required maxlength="200" placeholder="한 문장으로 요약해 주세요">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="project-type">유형 *</label>
+                    <select id="project-type">
+                      <option value="개인">개인</option>
+                      <option value="팀">팀</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="project-order">중요도 (작을수록 상단)</label>
+                    <input type="number" id="project-order" value="0" min="0">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="project-period">개발 기간</label>
+                  <input type="text" id="project-period" placeholder="예: 2024.03 ~ 2024.06" maxlength="50">
+                </div>
+                <div class="form-group">
+                  <label for="project-tech">기술 스택 (쉼표 구분) *</label>
+                  <input type="text" id="project-tech" placeholder="Unity, C#, Firebase" required>
+                </div>
+              </div>
+              <div class="form-section form-section--images">
+                <h4 class="form-section-title">이미지</h4>
+                <div class="project-images-upload" id="project-images-upload">
+                  <div class="project-images-dropzone" id="project-images-dropzone">
+                    <input type="file" id="project-images-input" accept="image/*" multiple class="hidden">
+                    <span class="project-images-dropzone-icon">📷</span>
+                    <span class="project-images-dropzone-text">클릭하거나 이미지를 여기에 끌어다 놓으세요</span>
+                    <span class="project-images-dropzone-hint">여러 장 선택 가능</span>
+                  </div>
+                  <div class="project-images-preview" id="project-images-preview"></div>
+                </div>
+              </div>
+              <div class="form-section">
+                <h4 class="form-section-title">상세 내용</h4>
+                <div class="form-group">
+                  <label for="project-desc">프로젝트 설명 *</label>
+                  <textarea id="project-desc" rows="4" required placeholder="프로젝트에 대해 설명해 주세요"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="project-role">담당 역할</label>
+                  <textarea id="project-role" rows="2" placeholder="본인이 담당한 역할"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="project-problem">문제 및 해결 과정</label>
+                  <textarea id="project-problem" rows="3" placeholder="어려웠던 점과 해결 방법"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="project-result">결과 / 배운 점</label>
+                  <textarea id="project-result" rows="3" placeholder="결과물과 배운 점"></textarea>
+                </div>
+              </div>
+              <div class="form-section">
+                <h4 class="form-section-title">태그 & 링크</h4>
+                <div class="form-group">
+                  <label for="project-tags">태그 (쉼표 구분)</label>
+                  <input type="text" id="project-tags" placeholder="Unity, FPS, 팀프로젝트" maxlength="200">
+                </div>
+                <div class="form-group">
+                  <label for="project-github">GitHub 링크</label>
+                  <input type="url" id="project-github" placeholder="https://github.com/...">
+                </div>
+                <div class="form-group">
+                  <label for="project-video">영상 링크</label>
+                  <input type="url" id="project-video" placeholder="https://...">
+                </div>
+              </div>
+              <div class="form-group form-group--draft" id="project-draft-wrap">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="project-draft" value="1"> 임시 저장 (목록에 안 보임)
+                </label>
+              </div>
+              <div class="form-actions form-actions--project">
+                <button type="button" class="btn btn-ghost form-close">취소</button>
+                <button type="submit" class="btn btn-primary" id="project-submit-btn">저장</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QnA -->
+    <section id="qna" class="section section-qna section-page" data-section="qna">
+      <div class="container">
+        <h2 class="section-title">QnA</h2>
+        <div class="qna-layout">
+          <div class="qna-write">
+            <h3 class="qna-subtitle">질문하기</h3>
+            <form id="qna-form" class="qna-form">
+              <div class="form-group">
+                <label for="qna-name">이름 *</label>
+                <input type="text" id="qna-name" required maxlength="50">
+              </div>
+              <div class="form-group">
+                <label for="qna-content">질문 내용 *</label>
+                <textarea id="qna-content" rows="4" required maxlength="1000"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="qna-password">비밀번호 (삭제 시 사용) *</label>
+                <input type="password" id="qna-password" required minlength="4" maxlength="20">
+              </div>
+              <button type="submit" class="btn btn-primary">질문 등록</button>
+            </form>
+          </div>
+          <div class="qna-list-wrap">
+            <h3 class="qna-subtitle">질문 목록</h3>
+            <div id="qna-list" class="qna-list">
+              <div id="qna-skeleton" class="qna-skeleton">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- QnA 답변/삭제 모달 (관리자) -->
+        <div id="qna-modal" class="modal hidden">
+          <div class="modal-backdrop"></div>
+          <div class="modal-content">
+            <button type="button" class="modal-close qna-modal-close" aria-label="닫기">&times;</button>
+            <div id="qna-modal-body"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:786poqqep@gmail.com">이메일</a>
+    </div>
+    <p class="footer-copy">© 정권혁. Game Developer.</p>
+  </footer>
+
+  <!-- 관리자 비밀번호 모달 -->
+  <div id="admin-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+      <button type="button" class="modal-close admin-modal-close" aria-label="닫기">&times;</button>
+      <h3 class="modal-title">관리자 로그인</h3>
+      <form id="admin-form">
+        <div class="form-group">
+          <label for="admin-password">비밀번호</label>
+          <input type="password" id="admin-password" required placeholder="비밀번호 입력">
+        </div>
+        <p id="admin-error" class="form-error hidden"></p>
+        <button type="submit" class="btn btn-primary btn-block">확인</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
